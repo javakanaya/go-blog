@@ -21,7 +21,7 @@ func main() {
 	userController := controller.NewUserController(userService, jwtService)
 
 	postRepository := repository.NewPostRepository(db, userRepository)
-	postService := service.NewPostService(postRepository)
+	postService := service.NewPostService(postRepository, userRepository)
 	postController := controller.NewPostController(postService, jwtService)
 
 	commentRepository := repository.NewCommentRepository(db, userRepository)

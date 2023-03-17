@@ -20,19 +20,28 @@ type PostService interface {
 
 type postService struct {
 	postRepository repository.PostRepository
+	userRepository repository.UserRepository
 }
 
-func NewPostService(pr repository.PostRepository) PostService {
+func NewPostService(pr repository.PostRepository, ur repository.UserRepository) PostService {
 	return &postService{
 		postRepository: pr,
+		userRepository: ur,
 	}
 }
 
 func (ps *postService) CreatePost(ctx context.Context, postDTO dto.PostCreateDTO) (entity.Post, error) {
 	var post entity.Post
 	if err := smapping.FillStruct(&post, smapping.MapFields(postDTO)); err != nil {
-		return post, nil
+		return post, err
 	}
+
+	user, err := ps.userRepository.GetUserByID(ctx, postDTO.UserID)
+	if err != nil {
+		return entity.Post{}, err
+	}
+
+	post.User = user
 	return ps.postRepository.CreatePost(ctx, post)
 }
 
