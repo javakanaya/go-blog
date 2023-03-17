@@ -20,13 +20,11 @@ type PostService interface {
 
 type postService struct {
 	postRepository repository.PostRepository
-	userRepository repository.UserRepository
 }
 
 func NewPostService(pr repository.PostRepository, ur repository.UserRepository) PostService {
 	return &postService{
 		postRepository: pr,
-		userRepository: ur,
 	}
 }
 
