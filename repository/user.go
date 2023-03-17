@@ -42,7 +42,9 @@ func (db *userConnection) GetUserByEmail(ctx context.Context, email string) (ent
 
 func (db *userConnection) GetUserByID(ctx context.Context, userID uint64) (entity.User, error) {
 	var user entity.User
-	if tx := db.connection.Preload("Posts").Preload("Likes").Preload("Comments").Where("id = ?", userID).Take(&user).Error; tx != nil {
+	if tx := db.connection.Preload("Posts", func(db *gorm.DB) *gorm.DB {
+		return db.Select("id", "title")
+	}).Preload("Likes").Preload("Comments").Where("id = ?", userID).Take(&user).Error; tx != nil {
 		return entity.User{}, tx
 	}
 	return user, nil
