@@ -36,12 +36,6 @@ func (ps *postService) CreatePost(ctx context.Context, postDTO dto.PostCreateDTO
 		return post, err
 	}
 
-	user, err := ps.userRepository.GetUserByID(ctx, postDTO.UserID)
-	if err != nil {
-		return entity.Post{}, err
-	}
-
-	post.User = user
 	return ps.postRepository.CreatePost(ctx, post)
 }
 
