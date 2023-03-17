@@ -30,7 +30,7 @@ func NewPostRepository(db *gorm.DB, userRepository UserRepository) PostRepositor
 
 func (pc *postConnection) GetAllPosts(ctx context.Context) ([]entity.Post, error) {
 	var posts []entity.Post
-	if tx := pc.connection.Preload("User").Preload("Likes").Preload("Comments").Find(&posts).Error; tx != nil {
+	if tx := pc.connection.Preload("Likes").Preload("Comments").Find(&posts).Error; tx != nil {
 		return nil, tx
 	}
 	return posts, nil
