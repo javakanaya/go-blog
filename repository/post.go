@@ -46,7 +46,7 @@ func (pc *postConnection) GetPostById(ctx context.Context, postId uint64) (entit
 }
 
 func (pc *postConnection) CreatePost(ctx context.Context, post entity.Post) (entity.Post, error) {
-	if tx := pc.connection.Create(&post).Error; tx != nil {
+	if tx := pc.connection.Preload("User").Create(&post).Error; tx != nil {
 		return entity.Post{}, tx
 	}
 
