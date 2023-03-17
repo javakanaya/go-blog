@@ -30,7 +30,7 @@ func NewPostRepository(db *gorm.DB, userRepository UserRepository) PostRepositor
 
 func (pc *postConnection) GetAllPosts(ctx context.Context) ([]entity.Post, error) {
 	var posts []entity.Post
-	if tx := pc.connection.Find(&posts).Error; tx != nil {
+	if tx := pc.connection.Preload("User").Preload("Likes").Preload("Comments").Find(&posts).Error; tx != nil {
 		return nil, tx
 	}
 	return posts, nil
@@ -39,16 +39,9 @@ func (pc *postConnection) GetAllPosts(ctx context.Context) ([]entity.Post, error
 func (pc *postConnection) GetPostById(ctx context.Context, postId uint64) (entity.Post, error) {
 	var post entity.Post
 
-	if tx := pc.connection.Where("id = ?", postId).Take(&post).Error; tx != nil {
+	if tx := pc.connection.Preload("User").Preload("Likes").Preload("Comments").Where("id = ?", postId).Take(&post).Error; tx != nil {
 		return entity.Post{}, tx
 	}
-
-	user, err := pc.UserRepository.GetUserByID(ctx, post.UserID)
-	if err != nil {
-		return entity.Post{}, err
-	}
-
-	post.User = user
 	return post, nil
 }
 
@@ -57,11 +50,6 @@ func (pc *postConnection) CreatePost(ctx context.Context, post entity.Post) (ent
 		return entity.Post{}, tx
 	}
 
-	user, err := pc.UserRepository.GetUserByID(ctx, post.UserID)
-	if err != nil {
-		return entity.Post{}, err
-	}
-	post.User = user
 	return post, nil
 }
 
